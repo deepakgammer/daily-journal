@@ -4,10 +4,37 @@ const bodyParser = require("body-parser");
 const routes = require("./routes");
 
 const app = express();
-app.use(cors());
-app.use(bodyParser.json());
+
+/* -----------------------------
+   MIDDLEWARE
+------------------------------*/
+app.use(cors({
+  origin: "*",          // allow frontend (Netlify)
+  methods: ["GET", "POST"],
+}));
+
+app.use(bodyParser.json({ limit: "1mb" }));
+
+/* -----------------------------
+   ROUTES
+------------------------------*/
 app.use("/api", routes);
 
-app.listen(3000, () =>
-  console.log("🚀 Backend running at http://localhost:3000")
-);
+/* -----------------------------
+   HEALTH CHECK (IMPORTANT)
+------------------------------*/
+app.get("/", (req, res) => {
+  res.json({
+    status: "OK",
+    message: "Daily Journal API is running 🚀"
+  });
+});
+
+/* -----------------------------
+   SERVER START
+------------------------------*/
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Backend running on port ${PORT}`);
+});
